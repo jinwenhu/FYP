@@ -1,4 +1,4 @@
-# this file process wordnet synsets and output save it as a gensim tfidf corpus
+# this file processes wordnet synsets and output save it as a gensim tfidf corpus
 
 #############################
 # get all synsets from wordnet
