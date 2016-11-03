@@ -31,5 +31,6 @@ corpus_bow = [dictionary.doc2bow(text) for text in texts]
 
 #save tfidf corpus
 tfidf = models.TfidfModel(corpus_bow)
+tfidf.save("../data/wn.tfidf_model")
 corpus_tfidf = tfidf[corpus_bow]
 corpora.MmCorpus.serialize('../data/wn_tfidf.mm', corpus_bow)
