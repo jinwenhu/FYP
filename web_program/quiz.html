@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Theme Made By www.w3schools.com - No Copyright -->
+    <title>Bootstrap Theme Simply Me</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+    <script>
+    </script>
+    <script src="app.js"></script>
+</head>
+<body>
+<div class="container">
+    <div>
+        <img id = "myimg" width = "200" height = "200">
+    </div>
+    <div><p>1 is for most dislike and 5 is for most likes.</p></div>
+    <div id="rate" class="btn-group btn-group-lg">
+        <button type="button" class="btn btn-primary">1</button>
+        <button type="button" class="btn btn-primary">2</button>
+        <button type="button" class="btn btn-primary">3</button>
+        <button type="button" class="btn btn-primary">4</button>
+        <button type="button" class="btn btn-primary">5</button>
+    </div>
+    <div class="progress">
+          <div id = "progress" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0"
+                 aria-valuemin="0" aria-valuemax="100" style="width:0%">
+        0% Complete
+          </div>
+    </div>
+	<p><input type="button" value="Poke the server" id="poke" /></p>
+</div>
+
+<script>
+    var socket = io.connect('http://localhost:8080');
+    var images_Src = new Array(); //image src array
+    var rating_Result = new Array(); //rating result
+    var num_Images = 3;
+    var appendix = 0;
+
+    $(document).ready(function(){
+        load_src();
+        bind_socket();
+        bind_method();
+        $("#myimg").attr("src", images_Src[0]);
+        $("#rate :button").on('click', function() {
+            rate = this.innerHTML;
+            load_next(rate);
+        });
+    });
+    function load_next(rate) {
+        rating_Result[appendix] = rate;
+        appendix++;
+        if(appendix==num_Images){
+            alert("finish");
+            var jsonString = JSON.stringify(rating_Result);
+            socket.emit('result', {data: jsonString});
+        }
+        else{
+            var newprogress = String(100/num_Images*appendix) + "%"
+            $("#myimg").attr("src", images_Src[appendix]);
+            $("#progress").css("width", newprogress);
+            $("#progress").attr("aria-valuenow", newprogress);
+            $("#progress").text(newprogress + " Complete");
+        }
+    }
+    function load_src() {//load src to images array
+        for (i = 0; i < num_Images; i++) {
+            index = "http://localhost:3000/image/image" + String(i) + ".jpg"
+            images_Src[i] = index
+        }
+    }
+    function bind_method(){
+        $('#poke').bind("click", function(){
+            var username = prompt('What\'s your username?');
+            socket.emit('little_newbie', username);
+            socket.emit('message', 'Hi server, how are you?');
+        });
+    }
+    function bind_socket(){
+        socket.on('message', function(message) {
+            alert('The server has a message for you: ' + message);
+        })
+    }
+</script>
+
+</body>
