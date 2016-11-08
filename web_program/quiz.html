@@ -58,7 +58,7 @@
         if(appendix==num_Images){
             alert("finish");
             var jsonString = JSON.stringify(rating_Result);
-            socket.emit('result', {data: jsonString});
+            socket.emit('result', jsonString);
         }
         else{
             var newprogress = String(100/num_Images*appendix) + "%"

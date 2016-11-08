@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Theme Made By www.w3schools.com - No Copyright -->
+    <title>Bootstrap Theme Simply Me</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+    <script>
+    </script>
+    <script src="app.js"></script>
+</head>
+<body>
+<div class="container">
+    <h2 id = "mymovie"></h2>
+    <img id = "myimg" width = "300" height = "300">
+    <div class="panel panel-success">
+        <div class="panel-heading">Description</div>
+        <div id = "mypanel" class="panel-body">temp_description</div>
+        <div class="panel-body"><a id = "myurl" target="_blank">Click To Know More</a></div>
+    </div>
+
+</div>
+
+</div>
+
+<script>
+    var socket = io.connect('http://localhost:8080');
+    var base_image = "http://localhost:3000/";
+    bind_socket();
+    $(document).ready(function(){
+        socket.emit('next', '0');
+    });
+
+    function bind_socket(){
+        socket.on('message', function(message) {
+            alert('The server has a message for you: ' + message);
+        });
+        socket.on('movie_name', function(message) {
+            $("#mymovie").text(message);
+        });
+        socket.on('movie_description', function(message) {
+            $("#mypanel").text(message);
+        });
+        socket.on('movie_image', function(message) {
+            alert('The server has a message for you: ' + message);
+            var temp = message.split("\\");
+            temp[0] = temp[0].replace(" ", "");
+            temp[1] = temp[1].replace(/#/g, "%23");
+            var image_url = base_image + temp[0] + "/" + temp[1] + "/" + temp[2];//"movie_image/#Horror#Mystery/One Missed Call.jpg";
+            //alert(image_url);
+            $("#myimg").attr("src", image_url);
+        });
+        socket.on('movie_url', function(message) {
+            $("#myurl").attr("href",message);
+        });
+    }
+</script>
+
+</body>

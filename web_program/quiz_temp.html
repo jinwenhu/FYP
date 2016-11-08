@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Theme Made By www.w3schools.com - No Copyright -->
+    <title>Bootstrap Theme Simply Me</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+    <script>
+    </script>
+    <script src="app.js"></script>
+</head>
+<body>
+<div class="container">
+    <div>
+        <img id = "myimg" width = "300" height = "300">
+    </div>
+    <div class="panel panel-success">
+        <div class="panel-heading">Description</div>
+        <div id = "mypanel" class="panel-body">temp_description</div>
+        <iframe id="myvideo" width="400" height="300" class="embed-responsive-item"></iframe>
+        </div>
+    </div>
+
+    <div><p>1 is for most dislike and 5 is for most likes.</p></div>
+    <div id="rate" class="btn-group btn-group-lg">
+        <button type="button" class="btn btn-primary">1</button>
+        <button type="button" class="btn btn-primary">2</button>
+        <button type="button" class="btn btn-primary">3</button>
+        <button type="button" class="btn btn-primary">4</button>
+        <button type="button" class="btn btn-primary">5</button>
+    </div>
+    <div class="progress">
+          <div id = "progress" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0"
+                 aria-valuemin="0" aria-valuemax="100" style="width:0%">
+          </div>
+    </div>
+	<p><input type="button" value="Poke the server" id="poke" /></p>
+</div>
+
+<script>
+    var url_prefix = "//www.youtube.com/embed/"
+    var socket = io.connect('http://localhost:8080');
+    var test_movie_name = ["Inception", "Alien", "Goodfellas", "Scarface", "Whiplash", "Amlie", "Snatch", "Casablanca", "Downfall", "Rebecca", "Niagara", "Aliens", "Unforgiven", "Silverado", "Psycho", "Vessel", "Se7en", "Gladiator", "Samsara", "Woodstock", "Aladdin", "Veer-Zaara", "Airlift", "WALLE", "Up", "Destiny", "Ordet", "Warrior", "Rocky", "Amadeus"];
+    var video_id = [
+    "YoHD9XEInc0", 
+    "jQ5lPt9edzQ", 
+    "RWZ78ICQcSk", 
+    "vREl66xmXsE", 
+    "zIP_gtjDtfE", 
+    "HUECWi5pX7o", 
+    "qYr4zKmTTcY", 
+    "BkL9l7qovsE", 
+    "2dzKgq4zl4E", 
+    "v0itmG80oLI", 
+    "cCyIpOOc1X0", 
+    "zNE0dlHcmgA", 
+    "ftTX4FoBWlE", 
+    "1Ux4lX5FP2Q", 
+    "HjI1Of2lfhs", 
+    "F6_gmpEAdo4", 
+    "znmZoVkCjpI", 
+    "Q-b7B8tOAQU", 
+    "HCkEILshUyU", 
+    "Ok9941BTzVg", 
+    "QapaqcDucmg", 
+    "OSaVImLnnsw", 
+    "vb5xCMbMfZ0", 
+    "9pyBKj5-jVk", 
+    "pkqzFUhGPJg", 
+    "K89N-HYYSGo", 
+    "-uQEPjRog84", 
+    "I5kzcwcQA1Q", 
+    "3VUblDwa648", 
+    "r7kWQj9FCGY"
+    ];
+    var test_movie_text = [
+    "Directed by Christopher Nolan.  With Leonardo DiCaprio, Joseph Gordon-Levitt, Ellen Page, Ken Watanabe. A thief, who steals corporate secrets through use of dream-sharing technology, is given the inverse task of planting an idea into the mind of a CEO.",
+    "Directed by Ridley Scott.  With Sigourney Weaver, Tom Skerritt, John Hurt, Veronica Cartwright. After a space merchant vessel perceives an unknown transmission as distress call, their landing on the source moon finds one of the crew attacked by a mysterious lifeform. Continuing their journey back to Earth with the attacked crew having recovered and the critter deceased, they soon realize that its life cycle has merely begun.",
+    "Directed by Martin Scorsese.  With Robert De Niro, Ray Liotta, Joe Pesci, Lorraine Bracco. Henry Hill and his friends work their way up through the mob hierarchy.",
+    "Directed by Brian De Palma.  With Al Pacino, Michelle Pfeiffer, Steven Bauer, Mary Elizabeth Mastrantonio. In Miami in 1980, a determined Cuban immigrant takes over a drug cartel and succumbs to greed.",
+    "Directed by Damien Chazelle.  With Miles Teller, J.K. Simmons, Melissa Benoist, Paul Reiser. A promising young drummer enrolls at a cut-throat music conservatory where his dreams of greatness are mentored by an instructor who will stop at nothing to realize a student's potential.",
+    "Directed by Jean-Pierre Jeunet.  With Audrey Tautou, Mathieu Kassovitz, Rufus, Lorella Cravotta. Amlie is an innocent and naive girl in Paris with her own sense of justice. She decides to help those around her and, along the way, discovers love.",
+    "Directed by Guy Ritchie.  With Jason Statham, Brad Pitt, Benicio Del Toro, Dennis Farina. Unscrupulous boxing promoters, violent bookmakers, a Russian gangster, incompetent amateur robbers, and supposedly Jewish jewelers fight to track down a priceless stolen diamond.",
+    "Directed by Michael Curtiz.  With Humphrey Bogart, Ingrid Bergman, Paul Henreid, Claude Rains. In Casablanca, Morocco in December 1941, a cynical American expatriate meets a former lover, with unforeseen complications.",
+    "Directed by Oliver Hirschbiegel.  With Bruno Ganz, Alexandra Maria Lara, Ulrich Matthes, Juliane Khler. Traudl Junge, the final secretary for Adolf Hitler, tells of the Nazi dictator's final days in his Berlin bunker at the end of WWII.",
+    "Directed by Alfred Hitchcock.  With Laurence Olivier, Joan Fontaine, George Sanders, Judith Anderson. A self-conscious bride is tormented by the memory of her husband's dead first wife.",
+    "Directed by Henry Hathaway.  With Marilyn Monroe, Joseph Cotten, Jean Peters, Max Showalter. As two couples are visiting Niagara Falls, tensions between one wife and her husband reach the level of murder.",
+    "Directed by James Cameron.  With Sigourney Weaver, Michael Biehn, Carrie Henn, Paul Reiser. The moon from Alien (1979) has been colonized, but contact is lost. This time, the rescue team has impressive firepower, but will it be enough?",
+    "Directed by Clint Eastwood.  With Clint Eastwood, Gene Hackman, Morgan Freeman, Richard Harris. Retired Old West gunslinger William Munny reluctantly takes on one last job, with the help of his old partner and a young man.",
+    "Directed by Lawrence Kasdan.  With Kevin Kline, Scott Glenn, Kevin Costner, Danny Glover. A misfit bunch of friends come together to right the injustices which exist in a small town.",
+    "Directed by Alfred Hitchcock.  With Anthony Perkins, Janet Leigh, Vera Miles, John Gavin. A Phoenix secretary embezzles $40,000 from her employer's client, goes on the run, and checks into a remote motel run by a young man under the domination of his mother.",
+    "Directed by Clark Baker.  With Brandon Bales, Julie Mintz, Whit Spurgeon, Alan Pietruszewski. Vessel is the story of the passengers of Flight 298, a red-eye on its way from Boston to San Francisco. Midway through the flight the passengers encounter an otherworldly force and are subsequently thrown into a fight for their lives. The story focuses on Danny (an everyday traveler), Emma (a flight attendant), Chloe (an unattended underage passenger) and Jim and Murray (the two pilots).",
+    "Directed by David Fincher.  With Morgan Freeman, Brad Pitt, Kevin Spacey, Andrew Kevin Walker. Two detectives, a rookie and a veteran, hunt a serial killer who uses the seven deadly sins as his modus operandi.",
+    "Directed by Ridley Scott.  With Russell Crowe, Joaquin Phoenix, Connie Nielsen, Oliver Reed. When a Roman general is betrayed and his family murdered by an emperor's corrupt son, he comes to Rome as a gladiator to seek revenge.",
+    "Directed by Ron Fricke.  With Balinese Tari Legong Dancers, Ni Made Megahadi Pratiwi, Puti Sri Candra Dewi, Putu Dinda Pratika. Filmed over nearly five years in twenty-five countries on five continents, and shot on seventy-millimetre film, Samsara transports us to the varied worlds of sacred grounds, disaster zones, industrial complexes, and natural wonders.",
+    "Directed by Michael Wadleigh.  With Joan Baez, Richie Havens, Roger Daltrey, Joe Cocker. The film chronicle of the legendary 1969 music festival.",
+    "Directed by Ron Clements, John Musker.  With Scott Weinger, Robin Williams, Linda Larkin, Jonathan Freeman. When a street urchin vies for the love of a beautiful princess, he uses a genie's magic power to make himself off as a prince in order to marry her.",
+    "Directed by Yash Chopra.  With Shah Rukh Khan, Preity Zinta, Rani Mukerji, Kiron Kher. The story of the love between Veer Pratap Singh, an Indian, and Zaara Hayaat Khan, a Pakistani...a love so great it knows no boundaries...",
+    "Directed by Raja Menon.  With Akshay Kumar, Nimrat Kaur, Kumud Mishra, Prakash Belawadi. When Iraq invades Kuwait in August, 1990, a callous Indian businessman becomes the spokesperson for more than 170,000 stranded countrymen.",
+    "Directed by Andrew Stanton.  With Ben Burtt, Elissa Knight, Jeff Garlin, Fred Willard. In the distant future, a small waste-collecting robot inadvertently embarks on a space journey that will ultimately decide the fate of mankind.",
+    "Directed by Pete Docter, Bob Peterson.  With Edward Asner, Jordan Nagai, John Ratzenberger, Christopher Plummer. Seventy-eight year old Carl Fredricksen travels to Paradise Falls in his home equipped with balloons, inadvertently taking a young stowaway.",
+    "Directed by Joseph Kosinski.  With Peter Dinklage, Bill Nighy, Lauren Cohan, Brandon O'Neill. Years in the future, a group of space-born humans fight to remove the Earth of alien invaders.",
+    "Directed by Carl Theodor Dreyer.  With Henrik Malberg, Emil Hass Christensen, Preben Lerdorff Rye, Hanne Aagesen. Follows the lives of the Brogen family, as they deal with inner conflict, as well as religious conflict with one and other, and the rest of the town. The various events that unfold throughout the film tests all of their faith and beliefs.",
+    "Directed by Gavin O'Connor.  With Tom Hardy, Nick Nolte, Joel Edgerton, Jennifer Morrison. The youngest son of an alcoholic former boxer returns home, where he's trained by his father for competition in a mixed martial arts tournament - a path that puts the fighter on a collision course with his estranged, older brother.",
+    "Directed by John G. Avildsen.  With Sylvester Stallone, Talia Shire, Burt Young, Carl Weathers. Rocky Balboa, a small-time boxer, gets a supremely rare chance to fight the heavy-weight champion, Apollo Creed, in a bout in which he strives to go the distance for his self-respect.",
+    "Directed by Milos Forman.  With F. Murray Abraham, Tom Hulce, Elizabeth Berridge, Roy Dotrice. The incredible story of Wolfgang Amadeus Mozart, told by his peer and secret rival Antonio Salieri - now confined to an insane asylum."
+    ];
+    var images_Src = new Array(); //image src array
+    var rating_Result = new Array(); //rating result
+    var num_Images = 30;//number of images
+    var appendix = 0;
+
+    $(document).ready(function(){
+        load_src();
+        bind_socket();
+        bind_method();
+        movie_url = url_prefix + video_id[0];
+        $("#myimg").attr("src", images_Src[0]);
+        $("#mypanel").text(test_movie_text[0]);
+        $("#myvideo").attr("src",movie_url);
+        $("#rate :button").on('click', function() {
+            rate = this.innerHTML;
+            load_next(rate);
+        });
+    });
+    function load_next(rate) {
+        rating_Result[appendix] = rate;
+        appendix++;
+        if(appendix==num_Images){
+            alert("finish");
+            var jsonString = JSON.stringify(rating_Result);
+            socket.emit('result', jsonString);
+            window.location.href = "feedback.html";
+        }
+        else{
+            var newprogress = String(100/num_Images*appendix) + "%"
+            $("#myimg").attr("src", images_Src[appendix]);
+            movie_url = url_prefix + video_id[appendix];
+            $("#myvideo").attr("src",movie_url);
+            $("#mypanel").text(test_movie_text[appendix]);
+            $("#progress").css("width", newprogress);
+            $("#progress").attr("aria-valuenow", newprogress);
+            //$("#progress").text(newprogress + " Complete");
+        }
+    }
+    function load_src() {//load src to images array
+        for (i = 0; i < num_Images; i++) {
+            movie_index = test_movie_name[i];
+            index = "http://localhost:3000/static_image/" + movie_index + ".jpg"
+            images_Src[i] = index
+        }
+    }
+    function bind_method(){
+        $('#poke').bind("click", function(){
+            var username = prompt('What\'s your username?');
+            socket.emit('little_newbie', username);
+            socket.emit('message', 'Hi server, how are you?');
+        });
+    }
+    function bind_socket(){
+        socket.on('message', function(message) {
+            alert('The server has a message for you: ' + message);
+        })
+    }
+</script>
+
+</body>

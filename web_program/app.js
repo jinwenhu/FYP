@@ -1,7 +1,12 @@
 var express = require ('express');
 var http = require('http');
+//var httpProxy = require('http-proxy');
 var fs = require('fs');
 var app = express ();
+var PythonShell = require('python-shell');
+var pyshell = new PythonShell('operate.py');
+var movie_result = new Array() //returned recommended movie list
+
 app.use(express.static(__dirname + '/public'));
 app.listen(3000);
 
@@ -22,14 +27,6 @@ var server = http.createServer(function(req, res) {
    });   
 
 });
-
-//var PythonShell = require('python-shell');
-
-//PythonShell.run('test.py', function (err, results) {
-//  if (err) throw err;
-//  console.log('results: %j', results);
-//});
-
 // Loading socket.io
 var io = require('socket.io').listen(server);
 
@@ -43,10 +40,38 @@ io.sockets.on('connection', function(socket) {
         console.log(socket.username + 'is speaking to me! They’re saying: ' + message);
     });
 	socket.on('result', function (message) {
-		console.log("receive results");
-        console.log(message);
+        // sends a message to the Python script via stdin
+        pyshell.send(message);
+
+        pyshell.on('message', function (message) {
+            // received a message sent from the Python script (a simple "print" statement)
+            console.log('feedback');
+            console.log(message);
+            var temp_list = message.split(",");
+            movie_result.push(temp_list);
+        });
+
+        // end the input stream and allow the process to exit
+        pyshell.end(function (err) {
+            if (err) throw err;
+            console.log('finished');
+            //console.log(movie_result[0][0]);
+
+        });
+        //socket.disconnect(0);
+    });
+    socket.on('next', function (message) {
+        var id = parseInt(message);
+        if (movie_result[id] == undefined){
+            socket.emit('message', "you have not completed rating.");
+        }
+        else{
+            socket.emit('movie_name', movie_result[id][0]);
+            socket.emit('movie_description', movie_result[id][1]);
+            socket.emit('movie_image', movie_result[id][2]);
+            socket.emit('movie_url', movie_result[id][3]);
+        }
     });
 });
 
-	
 server.listen(8080);
