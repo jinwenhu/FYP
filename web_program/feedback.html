@@ -22,17 +22,45 @@
         <div id = "mypanel" class="panel-body">temp_description</div>
         <div class="panel-body"><a id = "myurl" target="_blank">Click To Know More</a></div>
     </div>
-
-</div>
-
+    <div id = "block1"><p>Do you know this movie before?</p>
+        <div id="question1" class="btn-group btn-group-lg">
+            <button type="button" class="btn btn-primary">yes</button>
+            <button type="button" class="btn btn-primary">no</button>
+        </div>
+    </div>
+    <div id = "block2"><p>Do you like this movie?</p>
+        <div id="question2" class="btn-group btn-group-lg">
+            <button type="button" class="btn btn-primary">yes</button>
+            <button type="button" class="btn btn-primary">no</button>
+        </div>
+    </div>
 </div>
 
 <script>
     var socket = io.connect('http://localhost:8080');
     var base_image = "http://localhost:3000/";
+    var movie_feedbaclk = new Array();
+    var rate;
+    var movie_name = "";
+    var index = 0;
     bind_socket();
     $(document).ready(function(){
         socket.emit('next', '0');
+        $("#block2").hide();
+        $("#question1 :button").on('click', function() {
+            rate = this.innerHTML;
+            movie_feedbaclk.push(rate);
+            $("#block1").hide();
+            $("#block2").show();
+        });
+        $("#question2 :button").on('click', function() {
+            index++;
+            rate = this.innerHTML;
+            movie_feedbaclk.push(rate);
+            var jsonString = JSON.stringify(movie_feedbaclk);
+            socket.emit('feedback',{movie_name: jsonString});
+            socket.emit('next', index.toString());
+        });
     });
 
     function bind_socket(){
@@ -41,6 +69,7 @@
         });
         socket.on('movie_name', function(message) {
             $("#mymovie").text(message);
+            movie_name = message;
         });
         socket.on('movie_description', function(message) {
             $("#mypanel").text(message);

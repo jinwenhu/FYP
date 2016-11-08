@@ -41,6 +41,7 @@ io.sockets.on('connection', function(socket) {
     });
 	socket.on('result', function (message) {
         // sends a message to the Python script via stdin
+        console.log(message);
         pyshell.send(message);
 
         pyshell.on('message', function (message) {
@@ -61,9 +62,10 @@ io.sockets.on('connection', function(socket) {
         //socket.disconnect(0);
     });
     socket.on('next', function (message) {
+        console.log(message);
         var id = parseInt(message);
-        if (movie_result[id] == undefined){
-            socket.emit('message', "you have not completed rating.");
+        if (movie_result[id] == undefined || movie_result[id] == null){
+            socket.emit('message', "you have not completed rating or you do not have enough movie_space.");
         }
         else{
             socket.emit('movie_name', movie_result[id][0]);
