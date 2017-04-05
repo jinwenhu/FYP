@@ -48,7 +48,7 @@ for movie_id in movie_tags_dict:
             for start in head_list:
                 for end in tail_list:
                     implicit_list = gp.query(start, end)
-                    if implicit_list and len(implicit_list) < 5:
+                    if implicit_list and len(implicit_list) < 7:
                         movie_tags_implicit_dict[movie_id].extend(implicit_list[1:-1])
 
 
