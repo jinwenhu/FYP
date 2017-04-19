@@ -28,7 +28,7 @@ movie_explicit_profiles = json.load(open("data/movie_explicit_tags"))
 movie_ids = map(int, movie_explicit_profiles.keys())
 num_movies = len(movie_ids)
 explicit_correlations = {}
-implcit_correlation = {}
+implicit_correlations = {}
 
 for movie_id in movie_ids:
 	movie_explicit_profiles[str(movie_id)] = csr_matrix(movie_explicit_profiles[str(movie_id)])
@@ -40,8 +40,8 @@ for i in range(num_movies):
 	explicit_correlations[movie_id1] = {}
 	for j in range(i + 1, num_movies):
 		movie_id2 = movie_ids[j]
-		explicit_correlations[movie_id1][movie_id2] = sparse_corrcoef(movie_explicit_profiles[str(movie_id1)], movie_explicit_profiles[str(movie_id2)])
-with open("data/movie_explicit_correlations") as f:
+		explicit_correlations[movie_id1][movie_id2] = sparse_corrcoef(movie_explicit_profiles[str(movie_id1)], movie_explicit_profiles[str(movie_id2)])[0, 1]
+with open("data/movie_explicit_correlations",'w') as f:
     json.dump(explicit_correlations, f)
 del explicit_correlations
 
@@ -53,6 +53,6 @@ for movie_id1 in movie_ids:
 	implicit_correlations[movie_id1] = {}
 	for movie_id2 in movie_ids:
 		if movie_id1 != movie_id2:
-		    implicit_correlations[movie_id1][movie_id2] = sparse_corrcoef(movie_implicit_profiles[str(movie_id1)], movie_explicit_profiles[str(movie_id2)])
-with open("data/movie_implicit_correlations") as f:
+		    implicit_correlations[movie_id1][movie_id2] = sparse_corrcoef(movie_implicit_profiles[str(movie_id1)], movie_explicit_profiles[str(movie_id2)])[0, 1]
+with open("data/movie_implicit_correlations", 'w') as f:
     json.dump(implicit_correlations, f)

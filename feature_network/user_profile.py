@@ -11,6 +11,8 @@ with open("data/movie_implicit_tags", "r") as input2:
     movie_implicit_tags_dict = json.load(input2)
 input2.close()
 
+num_features = len(movie_implicit_tags_dict[movie_implicit_tags_dict.keys()[0]])
+print num_features
 #user rating database -> user_id, movie_id, rating
 with open("data/user_ratedmovies.dat") as input:
     user_ratings = input.read().splitlines()
@@ -30,17 +32,17 @@ for line in user_ratings:
     rating_result = float(line[2]) - 2.5
 
     if user_id not in user_explicit_tags_dict:
-        user_explicit_tags_dict[user_id] = {}
+        user_explicit_tags_dict[user_id] = [0] * num_features
     if user_id not in user_implicit_tags_dict:
-        user_implicit_tags_dict[user_id] = {}
+        user_implicit_tags_dict[user_id] = [0] * num_features
     try:
-
-        print "%s" % len(user_explicit_tags_dict)
-
+        #print "%s" % len(user_explicit_tags_dict)
         #generate user features list
-        explicit_tags_list = movie_explicit_tags_dict[movie_id]
-        implicit_tags_list = movie_implicit_tags_dict[movie_id]
-
+        explicit_tags_list = movie_explicit_tags_dict[str(movie_id)]
+        implicit_tags_list = movie_implicit_tags_dict[str(movie_id)]
+        user_explicit_tags[user_id] += map(lambda x: x * rating_result, explicit_tags_list)
+        user_implicit_tags[user_id] += map(lambda x: x * rating_result, implicit_tags_list)
+        """
         for item in explicit_tags_list:
             if item not in user_explicit_tags_dict[user_id]:
                 user_explicit_tags_dict[user_id][item] = rating_result
@@ -52,6 +54,7 @@ for line in user_ratings:
                 user_implicit_tags_dict[user_id][item] = rating_result
             else:
                 user_implicit_tags_dict[user_id][item] = np.mean([float(user_implicit_tags_dict[user_id][item]), rating_result])
+        """
         #user_explicit_tags_dict[user_id][float(rating_result)].extend(explicit_tags_list)
         #user_implicit_tags_dict[user_id][float(rating_result)].extend(implicit_tags_list)
 
